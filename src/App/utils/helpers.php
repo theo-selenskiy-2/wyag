@@ -5,6 +5,8 @@ namespace Console\App\utils;
 use Console\App\Git\GitRepository;
 use Exception;
 
+file_put_contents('/tmp/helper_debug.log', "Helpers loaded\n", FILE_APPEND);
+
 /**
  * Compute path under repo's gitdir.
  * @param GitRepository $repo 
@@ -93,9 +95,9 @@ function is_dir_empty($dir) {
 function repo_default_config($configPath){
     $default_config = [
         "core" => [
-            "repositoryformatversion" => 0,
-            "filemode" => false,
-            "bare" => false
+            "repositoryformatversion" => "0",
+            "filemode" => "false",
+            "bare" => "false"
         ]
     ];
 

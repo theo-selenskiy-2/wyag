@@ -2,6 +2,8 @@
 
 namespace Console\App\Commands;
 
+require_once __DIR__ . '/../utils/helpers.php';
+
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,7 +26,7 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         //repo_create($input->getArgument('path'));
-        $output->writeln(is_dir_empty('/Users/theo.selenskiy/Documents/GitHub/poop'));
+        repo_create($input->getArgument('path'));
         $output->writeln('done');
         return Command::SUCCESS;
     }
