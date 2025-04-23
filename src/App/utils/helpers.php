@@ -10,7 +10,7 @@ use Console\App\Git\GitRepository;
 function repo_path(GitRepository $repo, ...$path)
 {
     return array_reduce($path, function ($carry, $item) {
-        return rtrim($carry, '/') . '/' . $item;
+        return rtrim($carry, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $item;
     }, $repo->getGitDir());
 }
 
@@ -19,7 +19,7 @@ function repo_path(GitRepository $repo, ...$path)
  * 
  * @param GitRepository $repo
  * @param bool $mkdir
- * @return string|void
+ * @return string|null
  */
 function repo_file(GitRepository $repo, bool $mkdir, ...$path)
 {
@@ -33,7 +33,7 @@ function repo_file(GitRepository $repo, bool $mkdir, ...$path)
  * 
  * @param GitRepository $repo
  * @param bool $mkdir
- * @return string|void
+ * @return string|null
  */
 function repo_dir(GitRepository $repo, bool $mkdir, ...$path)
 {
@@ -50,5 +50,5 @@ function repo_dir(GitRepository $repo, bool $mkdir, ...$path)
         mkdir($dir, 0777, true);
         return $dir;
     }
-    return;
+    return null;
 }
