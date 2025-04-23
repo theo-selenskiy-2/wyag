@@ -36,14 +36,14 @@ class GitRepository
         }
 
         if(!$force) {
-            $vers = intval($this->conf['repositoryformatversion']) === 0;
+            $vers = intval($this->conf['repositoryformatversion'] ?? -1);
             if($vers !== 0) {
                 throw new Exception(sprintf('unsupported repositoryformatversion: %s', $vers));
             }
         }
     }
 
-    public function getGitDir()
+    public function getGitDir(): string
     {
         return $this->gitdir;
     }
