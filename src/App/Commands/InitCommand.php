@@ -26,7 +26,7 @@ class InitCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         //repo_create($input->getArgument('path'));
-        repo_create($input->getArgument('path'));
+        repo_create($input->getArgument('path') ?? '.');
         $output->writeln('done');
         return Command::SUCCESS;
     }
