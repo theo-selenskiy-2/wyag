@@ -1,6 +1,9 @@
 <?php
 
+namespace Console\App\utils;
+
 use Console\App\Git\GitRepository;
+use Exception;
 
 /**
  * Compute path under repo's gitdir.
