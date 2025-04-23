@@ -23,8 +23,8 @@ function repo_path(GitRepository $repo, ...$path)
  */
 function repo_file(GitRepository $repo, bool $mkdir, ...$path)
 {
-    if(repo_dir($repo, $mkdir, array_slice($path, 0, -1))) {
-        return repo_path($repo, $mkdir, ...$path);
+    if(repo_dir($repo, $mkdir, ...array_slice($path, 0, -1))) {
+        return repo_path($repo, ...$path);
     }
 }
 
@@ -47,7 +47,7 @@ function repo_dir(GitRepository $repo, bool $mkdir, ...$path)
     }
 
     if($mkdir) {
-        mkdir($dir);
+        mkdir($dir, 0777, true);
         return $dir;
     }
     return;
