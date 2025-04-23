@@ -55,3 +55,62 @@ function repo_dir(GitRepository $repo, bool $mkdir, ...$path)
     }
     return null;
 }
+
+function repo_create(string $worktree) 
+{
+    $repo = new GitRepository($worktree, True);
+
+    if(is_readable($worktree)) {
+        if(!is_dir($worktree)) {
+            throw new Exception(sprintf('%s is not a directory', $worktree));
+        }
+        if(is_dir($repo->getGitDir()) && !is_dir_empty($repo->getGitDir())) {
+            throw new Exception(sprintf('%s is not empty', $repo->getGitDir()));
+        }
+    } else {
+        mkdir($worktree);
+    }
+
+    assert(repo_dir($repo, true, "branches"));
+    assert(repo_dir($repo, true, "objects"));
+    assert(repo_dir($repo, true, "refs", "tags"));
+    assert(repo_dir($repo, true, "refs", "heads"));
+
+    $description = fopen(repo_file($repo, false, "description"), "w") or die("Unable to open file!");
+    fwrite($description, "Unnamed repository; edit this file 'description' to name the repository.\n");
+
+    $head = fopen(repo_file($repo, false, "HEAD"), "w") or die("Unable to open file!");
+    fwrite($head, "ref: refs/heads/master\n");
+
+    repo_default_config(repo_file($repo, false, "config"));
+}
+
+function is_dir_empty($dir) {
+    if (!is_readable($dir)) return NULL; 
+    return (count(scandir($dir)) == 2);
+}
+
+function repo_default_config($configPath){
+    $default_config = [
+        "core" => [
+            "repositoryformatversion" => 0,
+            "filemode" => false,
+            "bare" => false
+        ]
+    ];
+
+    return write_to_ini($default_config, $configPath);
+}
+
+
+function write_to_ini($config, $file) {
+    $content = '';
+    
+    foreach($config as $key => $pairs) {
+        $content .= "[$key]\n";
+        foreach($pairs as $v1 => $v2) {
+            $content .= "        $v1 = $v2\n";
+        }
+    }
+    return file_put_contents($file, $content) !== false;
+}

@@ -47,4 +47,9 @@ class GitRepository
     {
         return $this->gitdir;
     }
+
+    public function getWorktree(): string
+    {
+        return $this->worktree;
+    }
 }
