@@ -1,6 +1,12 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Console\App\Commands\InitCommand;
 
 function main()
 {
-    echo "Welcome to your PHP-based Git VCS!\n";
+    $app = new Application();
+    $app->add(new InitCommand());
+    $app->run();
 }
