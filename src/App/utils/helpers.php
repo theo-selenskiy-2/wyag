@@ -3,6 +3,11 @@
 namespace Console\App\utils;
 
 use Console\App\Git\GitRepository;
+use Console\App\Git\Object\GitBlob;
+use Console\App\Git\Object\GitCommit;
+use Console\App\Git\Object\GitObject;
+use Console\App\Git\Object\GitTag;
+use Console\App\Git\Object\GitTree;
 use Exception;
 
 file_put_contents('/tmp/helper_debug.log', "Helpers loaded\n", FILE_APPEND);
@@ -122,6 +127,63 @@ function repo_find(string $path, bool $required = true)
     }
 
     return repo_find($parent, $required);
+}
+
+/**
+ * Read object sha from Git repo. Return a GitObject of appropriate type.
+ * 
+ * @param GitRepository $repo
+ * @param string $sha
+ * @return GitObject|null
+ */
+function object_read(GitRepository $repo, string $sha): GitObject|null
+{
+    $path = repo_file($repo, false, "objects", substr($sha, 0, 2), substr($sha, 2));
+
+    if(!is_file($path)) {
+        return null;
+    }
+
+    $contents = file_get_contents($path);
+    $raw = zlib_decode($contents);
+
+    $space_pos = strpos($raw, ' ');
+    $format = substr($raw, 0, $space_pos);
+
+    $null_pos = strpos($raw, "\x00");
+    $size = intval(substr($raw, $space_pos+1, $null_pos-$space_pos-1));
+    $actual_size = strlen($raw) - $null_pos - 1;
+
+    if($size !== $actual_size) {
+        throw new Exception(sprintf("Malformed object %s: bad length", $sha));
+    }
+
+    $data = substr($raw, $null_pos + 1);
+
+    if($format === "commit") {
+        return new GitCommit($data);
+    } else if($format === "tree") {
+    }
+
+    switch ($format) {
+        case "commit":
+            $class = GitCommit::class;
+            break;
+        case "tree":
+            $class = GitTree::class;
+            break;
+        case "tag":
+            $class = GitTag::class;
+            break;
+        case "blob":
+            $class = GitBlob::class;
+            break;
+        default:
+            throw new Exception(sprintf("Unknown type %s", $format));
+            break;
+    }
+
+    return new $class($data);
 }
 
 function is_dir_empty($dir) {
