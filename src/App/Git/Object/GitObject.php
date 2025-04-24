@@ -1,6 +1,6 @@
 <?php
 
-namespace Console\App\Git;
+namespace Console\App\Git\Object;
 
 use Console\App\Git\GitRepository;
 
