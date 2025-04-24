@@ -58,6 +58,12 @@ function repo_dir(GitRepository $repo, bool $mkdir, ...$path)
     return null;
 }
 
+/**
+ * Create a git repo in the passed worktree
+ * 
+ * @param string $worktree
+ * @return string|null
+ */
 function repo_create(string $worktree) 
 {
     $repo = new GitRepository($worktree, True);
@@ -87,6 +93,37 @@ function repo_create(string $worktree)
     repo_default_config(repo_file($repo, false, "config"));
 }
 
+/**
+ * Find git repo in current directory or its parents
+ * 
+ * @param string $path
+ * @param bool $required
+ * @return GitRepository|null
+ */
+function repo_find(string $path, bool $required = true)
+{
+    if(!is_readable($path)) {
+        throw new Exception(sprintf("This file or folder doesn't exist: %s", $path));
+    }
+
+    $absolute_path = realpath($path);
+    $git_dir = rtrim($absolute_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '.git';
+    if(is_dir($git_dir)) {
+        return new GitRepository($absolute_path);
+    }
+
+    $parent = dirname($absolute_path);
+    if($parent === $absolute_path) {
+        if($required) {
+            throw new Exception("No git directory");
+        } else {
+            return null;
+        }
+    }
+
+    return repo_find($parent, $required);
+}
+
 function is_dir_empty($dir) {
     if (!is_readable($dir)) return NULL; 
     return (count(scandir($dir)) == 2);
@@ -103,7 +140,6 @@ function repo_default_config($configPath){
 
     return write_to_ini($default_config, $configPath);
 }
-
 
 function write_to_ini($config, $file) {
     $content = '';
