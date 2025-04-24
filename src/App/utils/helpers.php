@@ -107,7 +107,7 @@ function repo_find(string $path, bool $required = true)
     }
 
     $absolute_path = realpath($path);
-    $git_dir = rtrim($absolute_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '.git';
+    $git_dir = $absolute_path . DIRECTORY_SEPARATOR . '.git';
     if(is_dir($git_dir)) {
         return new GitRepository($absolute_path);
     }
