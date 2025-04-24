@@ -146,6 +146,9 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
 
     $contents = file_get_contents($path);
     $raw = zlib_decode($contents);
+    if(!$raw) {
+        throw new Exception(sprintf("Failed to decompress object %s", $sha));
+    }
 
     $space_pos = strpos($raw, ' ');
     $format = substr($raw, 0, $space_pos);
@@ -159,11 +162,6 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
     }
 
     $data = substr($raw, $null_pos + 1);
-
-    if($format === "commit") {
-        return new GitCommit($data);
-    } else if($format === "tree") {
-    }
 
     switch ($format) {
         case "commit":
