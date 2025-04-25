@@ -211,6 +211,13 @@ function object_write(GitObject $object, ?GitRepository $repo = null): string
     return $sha;
 }
 
+/**
+ * Hash an object and optionally save it if repo is passed
+ * @param string $path
+ * @param string $format
+ * @param GitRepository|null
+ * @return string
+ */
 function object_hash(string $path, string $format, ?GitRepository $repo = null): string
 {
     if(!is_file($path)) {
