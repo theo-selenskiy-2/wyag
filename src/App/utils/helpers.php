@@ -191,7 +191,7 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
  * @param GitRepository $repo
  * @return string
  */
-function object_write(GitObject $object, GitRepository $repo): string
+function object_write(GitObject $object, ?GitRepository $repo = null): string
 {
     $data = $object->serialize();
 
@@ -199,11 +199,49 @@ function object_write(GitObject $object, GitRepository $repo): string
     $sha = sha1($result);
 
     $path = repo_file($repo, true, "objects", substr($sha, 0, 2), substr($sha, 2));
-    if(!is_readable($path)) {
-        file_put_contents($path, zlib_encode($result, ZLIB_ENCODING_DEFLATE));
+    if($repo !== null) {
+        if(!is_readable($path)) {
+            file_put_contents($path, zlib_encode($result, ZLIB_ENCODING_DEFLATE));
+        } else {
+            throw new Exception(sprintf("Failed to write to %s as it already exists", $path));
+        }
     }
 
     return $sha;
+}
+
+function object_hash(string $path, string $format, ?GitRepository $repo = null): string
+{
+    if(!is_file($path)) {
+        throw new Exception(sprintf("Is not a file: %s", $path));
+    }
+    
+    $valid_formats = ['blob', 'commit', 'tree', 'tag'];
+    if(!in_array($format, $valid_formats, true)) {
+        throw new Exception(sprintf("Format: %s has to be either blob, commit, tree or tag", $format));
+    }
+
+    $data = file_get_contents($path);
+    switch ($format) {
+        // case "commit":
+        //     $class = GitCommit::class;
+        //     break;
+        // case "tree":
+        //     $class = GitTree::class;
+        //     break;
+        // case "tag":
+        //     $class = GitTag::class;
+        //     break;
+        case "blob":
+            $class = GitBlob::class;
+            break;
+        default:
+            throw new Exception(sprintf("Unknown type %s", $format));
+            break;
+    }
+
+    $obj = new $class($data);
+    return object_write($obj, $repo);
 }
 
 function is_dir_empty($dir) {
