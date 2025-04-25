@@ -141,7 +141,7 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
     $path = repo_file($repo, false, "objects", substr($sha, 0, 2), substr($sha, 2));
 
     if(!is_file($path)) {
-        throw new Exception(sprintf("Is not a file: ", $path));
+        throw new Exception(sprintf("Is not a file: %s", $path));
     }
 
     $contents = file_get_contents($path);
@@ -200,7 +200,7 @@ function object_write(GitObject $object, GitRepository $repo): string
 
     $path = repo_file($repo, true, "objects", substr($sha, 0, 2), substr($sha, 2));
     if(!is_readable($path)) {
-        file_put_contents($path, zlib_encode($result, ZLIB_ENCODING_RAW));
+        file_put_contents($path, zlib_encode($result, ZLIB_ENCODING_DEFLATE));
     }
 
     return $sha;
