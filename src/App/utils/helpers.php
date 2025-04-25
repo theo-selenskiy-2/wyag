@@ -259,7 +259,7 @@ function kvlm_parse(string $raw, int $start = 0, array $dict = [])
 
     if ($space === false || $new_line < $space) {
         assert($new_line===$start);
-        $dict['data'] = substr($raw, $start+1);
+        $dict['data'] = substr($raw, $start);
         return $dict;
     }
 
@@ -271,7 +271,7 @@ function kvlm_parse(string $raw, int $start = 0, array $dict = [])
         if($raw[$end+1] !== ' ') break;
     }
 
-    $value = substr($raw, $space+1, $end-$space);
+    $value = substr($raw, $space+1, $end-$space-2);
     $value = str_replace("\n ", "\n", $value);
 
     if(array_key_exists($key, $dict)) {
