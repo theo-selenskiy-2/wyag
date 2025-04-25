@@ -33,9 +33,12 @@ class HashObjectCommand extends Command
     {
         $type = $input->getOption('type');
         $write = $input->getOption('write');
-        $path = $input->getArgument('path');
+        $write_bool = strlen($write) === 1;
 
-        object_hash($path, $type, $write !== null ? new GitRepository(".") : null);
+        $path = $input->getArgument('path');
+        $sha = object_hash($path, $type, $write_bool ? new GitRepository(".") : null);
+
+        $output->writeln($sha);
         
         return Command::SUCCESS;
     }

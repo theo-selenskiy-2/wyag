@@ -198,8 +198,9 @@ function object_write(GitObject $object, ?GitRepository $repo = null): string
     $result = $object->getFormat() . ' ' . strlen($data) . "\x00" . $data;
     $sha = sha1($result);
 
-    $path = repo_file($repo, true, "objects", substr($sha, 0, 2), substr($sha, 2));
     if($repo !== null) {
+        $path = repo_file($repo, true, "objects", substr($sha, 0, 2), substr($sha, 2));
+
         if(!is_readable($path)) {
             file_put_contents($path, zlib_encode($result, ZLIB_ENCODING_DEFLATE));
         } else {
