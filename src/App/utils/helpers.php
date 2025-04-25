@@ -252,6 +252,13 @@ function object_hash(string $path, string $format, ?GitRepository $repo = null):
     return object_write($obj, $repo);
 }
 
+/**
+ * Key value list with message parser
+ * @param string $raw
+ * @param int $start
+ * @param array $dict
+ * @return array
+ */
 function kvlm_parse(string $raw, int $start = 0, array $dict = [])
 {
     $space = strpos($raw, ' ', $start);
@@ -285,6 +292,26 @@ function kvlm_parse(string $raw, int $start = 0, array $dict = [])
     }
 
     return kvlm_parse($raw, $end+1, $dict);
+}
+
+function kvlm_serialize(array $kvlm) 
+{
+    $ret = '';
+
+    foreach($kvlm as $key => &$value) {
+        if($key === "") continue;
+        if(!is_array($value)) {
+            $value = [ $value ];
+        }
+
+        foreach($value as $v) {
+            $ret .= $key . ' ' . str_replace("\n", "\n ", $v) . "\n";
+        }
+    }
+    
+    $ret .= "\n" . $kvlm[null];
+
+    return $ret;
 }
 
 function is_dir_empty($dir) {
