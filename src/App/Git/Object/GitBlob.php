@@ -20,8 +20,4 @@ class GitBlob extends GitObject
     {
         return "blob";
     }
-
-    public function getData() {
-        return $this->data;
-    }
 }

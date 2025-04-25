@@ -22,5 +22,4 @@ abstract class GitObject
     abstract public function serialize();
     abstract public function deserialize(mixed $data);
     abstract public function getFormat(): string;
-    abstract public function getData();
 }

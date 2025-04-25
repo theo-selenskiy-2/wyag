@@ -34,7 +34,7 @@ class TestCommand extends Command
         $obj = object_read($repo, $sha);
 
         $output->writeln($obj->getFormat());
-        $output->writeln($obj->getData());
+        $output->writeln($obj->serialize());
     }
 
     private function write(string $path, OutputInterface $output) {
