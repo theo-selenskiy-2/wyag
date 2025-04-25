@@ -252,6 +252,41 @@ function object_hash(string $path, string $format, ?GitRepository $repo = null):
     return object_write($obj, $repo);
 }
 
+function kvlm_parse(string $raw, int $start = 0, array $dict = [])
+{
+    $space = strpos($raw, ' ', $start);
+    $new_line = strpos($raw, "\n", $start);
+
+    if ($space === false || $new_line < $space) {
+        assert($new_line===$start);
+        $dict['data'] = substr($raw, $start+1);
+        return $dict;
+    }
+
+    $key = substr($raw, $start, $space-$start);
+
+    $end = $start;
+    while(true) {
+        $end = strpos($raw, "\n", $end+1);
+        if($raw[$end+1] !== ' ') break;
+    }
+
+    $value = substr($raw, $space+1, $end-$space);
+    $value = str_replace("\n ", "\n", $value);
+
+    if(array_key_exists($key, $dict)) {
+        if(is_array($dict[$key])) {
+            $dict[$key][] = $value;
+        } else {
+            $dict[$key] = [$dict[$key], $value];
+        }
+    } else {
+        $dict[$key] = $value;
+    }
+
+    return kvlm_parse($raw, $end+1, $dict);
+}
+
 function is_dir_empty($dir) {
     if (!is_readable($dir)) return NULL; 
     return (count(scandir($dir)) == 2);
