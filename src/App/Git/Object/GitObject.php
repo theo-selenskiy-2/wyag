@@ -6,7 +6,7 @@ use Console\App\Git\GitRepository;
 
 abstract class GitObject
 {
-    public function __construct(mixed $data)
+    public function __construct(?string $data = null)
     {
         if($data !== null) {
             $this->deserialize($data);
@@ -19,7 +19,7 @@ abstract class GitObject
         return;
     }
 
-    abstract public function serialize();
-    abstract public function deserialize(mixed $data);
+    abstract public function serialize(): string;
+    abstract public function deserialize(string $data): void;
     abstract public function getFormat(): string;
 }
