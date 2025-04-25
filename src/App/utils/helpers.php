@@ -259,7 +259,7 @@ function kvlm_parse(string $raw, int $start = 0, array $dict = [])
 
     if ($space === false || $new_line < $space) {
         assert($new_line===$start);
-        $dict['data'] = substr($raw, $start);
+        $dict[null] = substr($raw, $start);
         return $dict;
     }
 
