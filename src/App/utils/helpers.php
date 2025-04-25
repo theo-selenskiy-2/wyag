@@ -141,7 +141,7 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
     $path = repo_file($repo, false, "objects", substr($sha, 0, 2), substr($sha, 2));
 
     if(!is_file($path)) {
-        return null;
+        throw new Exception(sprintf("Is not a file: ", $path));
     }
 
     $contents = file_get_contents($path);
@@ -164,15 +164,15 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
     $data = substr($raw, $null_pos + 1);
 
     switch ($format) {
-        case "commit":
-            $class = GitCommit::class;
-            break;
-        case "tree":
-            $class = GitTree::class;
-            break;
-        case "tag":
-            $class = GitTag::class;
-            break;
+        // case "commit":
+        //     $class = GitCommit::class;
+        //     break;
+        // case "tree":
+        //     $class = GitTree::class;
+        //     break;
+        // case "tag":
+        //     $class = GitTag::class;
+        //     break;
         case "blob":
             $class = GitBlob::class;
             break;
@@ -182,6 +182,28 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
     }
 
     return new $class($data);
+}
+
+/**
+ * Write an object 
+ * 
+ * @param GitObject $object
+ * @param GitRepository $repo
+ * @return string
+ */
+function object_write(GitObject $object, GitRepository $repo): string
+{
+    $data = $object->serialize();
+
+    $result = $object->getFormat() . ' ' . strlen($data) . "\x00" . $data;
+    $sha = sha1($result);
+
+    $path = repo_file($repo, true, "objects", substr($sha, 0, 2), substr($sha, 2));
+    if(!is_readable($path)) {
+        file_put_contents($path, zlib_encode($result, ZLIB_ENCODING_RAW));
+    }
+
+    return $sha;
 }
 
 function is_dir_empty($dir) {

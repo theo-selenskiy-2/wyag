@@ -19,6 +19,8 @@ abstract class GitObject
         return;
     }
 
-    abstract protected function serialize(GitRepository $repo);
-    abstract protected function deserialize(mixed $data);
+    abstract public function serialize();
+    abstract public function deserialize(mixed $data);
+    abstract public function getFormat(): string;
+    abstract public function getData();
 }

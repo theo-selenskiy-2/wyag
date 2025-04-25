@@ -6,7 +6,22 @@ use Console\App\Git\GitRepository;
 
 class GitBlob extends GitObject
 {
-    protected function serialize(GitRepository $repo) {}
+    private mixed $data;
+    
+    public function serialize() {
+        return $this->data;
+    }
 
-    protected function deserialize(mixed $data) {}
+    public function deserialize(mixed $data) {
+        $this->data = $data;
+    }
+
+    public function getFormat(): string
+    {
+        return "blob";
+    }
+
+    public function getData() {
+        return $this->data;
+    }
 }
