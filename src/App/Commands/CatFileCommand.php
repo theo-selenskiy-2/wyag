@@ -30,11 +30,17 @@ class CatFileCommand extends Command
     {
         $repo = new GitRepository('.');
         $type = $input->getArgument('type');
-        $sha = $input->getArgument('object');
+        $valid_types = ['blob', 'commit', 'tree', 'tag'];
+        if (!in_array($type, $valid_types, true)) {
+            $output->writeln(sprintf("Invalid type: %s", $type));
+            return Command::FAILURE;
+        }
 
+        $sha = $input->getArgument('object');
         $object = object_read($repo, $sha);
         if(!$object) {
             $output->writeln(sprintf("failed to read object with sha: %s", $sha));
+            return Command::FAILURE;
         }
         $output->writeln($object->serialize());
         return Command::SUCCESS;
