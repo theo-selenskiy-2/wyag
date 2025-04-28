@@ -298,7 +298,7 @@ function kvlm_serialize(array $kvlm)
 {
     $ret = '';
 
-    foreach($kvlm as $key => &$value) {
+    foreach($kvlm as $key => $value) {
         if($key === "") continue;
         if(!is_array($value)) {
             $value = [ $value ];
