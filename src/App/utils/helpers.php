@@ -245,7 +245,7 @@ function kvlm_parse(string $raw, int $start = 0, array $dict = [])
         if($raw[$end+1] !== ' ') break;
     }
 
-    $value = substr($raw, $space+1, $end-$space-2);
+    $value = substr($raw, $space+1, $end-$space-1);
     $value = str_replace("\n ", "\n", $value);
 
     if(array_key_exists($key, $dict)) {
@@ -282,6 +282,17 @@ function kvlm_serialize(array $kvlm)
     $ret .= "\n" . $kvlm[null];
 
     return $ret;
+}
+
+function log_graphviz(GitRepository $repo, string $sha, array $seen)
+{
+    if(in_array($sha, $seen)) {
+        return;
+    }
+    $seen[] = $sha;
+
+    $commit = object_read($repo, $sha);
+    
 }
 
 function is_dir_empty($dir) {
