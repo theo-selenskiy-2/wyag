@@ -143,9 +143,9 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
     $data = substr($raw, $null_pos + 1);
 
     switch ($format) {
-        // case "commit":
-        //     $class = GitCommit::class;
-        //     break;
+        case "commit":
+            $class = GitCommit::class;
+            break;
         // case "tree":
         //     $class = GitTree::class;
         //     break;
@@ -202,9 +202,9 @@ function object_hash(string $path, string $format, ?GitRepository $repo = null):
 
     $data = file_get_contents($path);
     switch ($format) {
-        // case "commit":
-        //     $class = GitCommit::class;
-        //     break;
+        case "commit":
+            $class = GitCommit::class;
+            break;
         // case "tree":
         //     $class = GitTree::class;
         //     break;
