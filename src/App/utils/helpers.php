@@ -14,8 +14,6 @@ file_put_contents('/tmp/helper_debug.log', "Helpers loaded\n", FILE_APPEND);
 
 /**
  * Compute path under repo's gitdir.
- * @param GitRepository $repo 
- * @return string
  */
 function repo_path(GitRepository $repo, ...$path)
 {
@@ -26,10 +24,6 @@ function repo_path(GitRepository $repo, ...$path)
 
 /**
  * Compute path under repo's gitdir. Create dir if absent.
- * 
- * @param GitRepository $repo
- * @param bool $mkdir
- * @return string|null
  */
 function repo_file(GitRepository $repo, bool $mkdir, ...$path)
 {
@@ -40,10 +34,6 @@ function repo_file(GitRepository $repo, bool $mkdir, ...$path)
 
 /**
  * Compute path under repo's gitdir. Create dir if absent and $mkdir=true.
- * 
- * @param GitRepository $repo
- * @param bool $mkdir
- * @return string|null
  */
 function repo_dir(GitRepository $repo, bool $mkdir, ...$path)
 {
@@ -65,9 +55,6 @@ function repo_dir(GitRepository $repo, bool $mkdir, ...$path)
 
 /**
  * Create a git repo in the passed worktree
- * 
- * @param string $worktree
- * @return string|null
  */
 function repo_create(string $worktree) 
 {
@@ -100,10 +87,6 @@ function repo_create(string $worktree)
 
 /**
  * Find git repo in current directory or its parents
- * 
- * @param string $path
- * @param bool $required
- * @return GitRepository|null
  */
 function repo_find(string $path, bool $required = true)
 {
@@ -131,10 +114,6 @@ function repo_find(string $path, bool $required = true)
 
 /**
  * Read object sha from Git repo. Return a GitObject of appropriate type.
- * 
- * @param GitRepository $repo
- * @param string $sha
- * @return GitObject|null
  */
 function object_read(GitRepository $repo, string $sha): GitObject|null
 {
@@ -186,10 +165,6 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
 
 /**
  * Write an object 
- * 
- * @param GitObject $object
- * @param GitRepository $repo
- * @return string
  */
 function object_write(GitObject $object, ?GitRepository $repo = null): string
 {
@@ -213,10 +188,6 @@ function object_write(GitObject $object, ?GitRepository $repo = null): string
 
 /**
  * Hash an object and optionally save it if repo is passed
- * @param string $path
- * @param string $format
- * @param GitRepository|null
- * @return string
  */
 function object_hash(string $path, string $format, ?GitRepository $repo = null): string
 {
@@ -254,10 +225,6 @@ function object_hash(string $path, string $format, ?GitRepository $repo = null):
 
 /**
  * Key value list with message parser
- * @param string $raw
- * @param int $start
- * @param array $dict
- * @return array
  */
 function kvlm_parse(string $raw, int $start = 0, array $dict = [])
 {
@@ -294,6 +261,9 @@ function kvlm_parse(string $raw, int $start = 0, array $dict = [])
     return kvlm_parse($raw, $end+1, $dict);
 }
 
+/**
+ * Serialize Key-Value List with Message
+ */
 function kvlm_serialize(array $kvlm) 
 {
     $ret = '';
