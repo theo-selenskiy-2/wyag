@@ -292,17 +292,26 @@ function kvlm_serialize(array $kvlm)
     return $ret;
 }
 
-function log_graphviz(GitRepository $repo, string $sha, array $seen)
+function log_graphviz(GitRepository $repo, string $sha, \Ds\Set $seen)
 {
-    if(in_array($sha, $seen)) {
+    if($seen->contains($sha)) {
         return;
     }
-    $seen[] = $sha;
+    $seen->add($sha);
 
     $commit = object_read($repo, $sha);
     assert($commit instanceof GitCommit, 'assert that we get a commit');
-    $message = $commit->getKvlm();
-    
+    $kvlm = $commit->getKvlm();
+    $message = $kvlm[""];
+    $message = str_replace("\\", "\\\\", $message);
+    $message = str_replace("\"", "\\\"", $message);
+
+    $newline_pos = strpos($message, "\n");
+    if($newline_pos !== 0) {
+        $message = substr($message, 0, $newline_pos);
+    }
+
+    return $message;
 }
 
 function is_dir_empty($dir) {
