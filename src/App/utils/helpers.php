@@ -300,6 +300,8 @@ function log_graphviz(GitRepository $repo, string $sha, array $seen)
     $seen[] = $sha;
 
     $commit = object_read($repo, $sha);
+    assert($commit instanceof GitCommit, 'assert that we get a commit');
+    $message = $commit->getKvlm();
     
 }
 

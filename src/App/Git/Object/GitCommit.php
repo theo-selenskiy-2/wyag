@@ -28,4 +28,9 @@ class GitCommit extends GitObject
     {
         return "commit";
     }
+
+    public function getKvlm(): array
+    {
+        return $this->data;
+    }
 }
