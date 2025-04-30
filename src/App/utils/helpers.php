@@ -292,7 +292,7 @@ function kvlm_serialize(array $kvlm)
     return $ret;
 }
 
-function log_graphviz(GitRepository $repo, string $sha, array $seen)
+function log_graphviz(GitRepository $repo, string $sha, array &$seen)
 {
     if(in_array($sha, $seen)) {
         return;
@@ -321,12 +321,12 @@ function log_graphviz(GitRepository $repo, string $sha, array $seen)
 
     $parents = $kvlm['parent'];
 
-    if(!is_array("parent")) {
+    if(!is_array($parents)) {
         $parents = [$parents];
     }
 
     foreach($parents as $parent) {
-        echo sprintf("  c_%s -> c_%s", $sha, $parent);
+        echo sprintf("  c_%s -> c_%s;\n", $sha, $parent);
         log_graphviz($repo, $parent, $seen);
     }
 }
