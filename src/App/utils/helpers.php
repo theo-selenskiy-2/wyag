@@ -187,6 +187,14 @@ function object_write(GitObject $object, ?GitRepository $repo = null): string
 }
 
 /**
+ * Find an object by full hash, short hash, tag
+ */
+function object_find(GitRepository $repo, string $name, ?string $format)
+{
+    return $name;
+}
+
+/**
  * Hash an object and optionally save it if repo is passed
  */
 function object_hash(string $path, string $format, ?GitRepository $repo = null): string
