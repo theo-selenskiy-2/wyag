@@ -292,26 +292,43 @@ function kvlm_serialize(array $kvlm)
     return $ret;
 }
 
-function log_graphviz(GitRepository $repo, string $sha, \Ds\Set $seen)
+function log_graphviz(GitRepository $repo, string $sha, array $seen)
 {
-    if($seen->contains($sha)) {
+    if(in_array($sha, $seen)) {
         return;
     }
-    $seen->add($sha);
+    $seen[] = $sha; 
 
     $commit = object_read($repo, $sha);
     assert($commit instanceof GitCommit, 'assert that we get a commit');
     $kvlm = $commit->getKvlm();
     $message = $kvlm[""];
+    $message = trim($message);
     $message = str_replace("\\", "\\\\", $message);
     $message = str_replace("\"", "\\\"", $message);
-
+    
     $newline_pos = strpos($message, "\n");
-    if($newline_pos !== 0) {
+    if($newline_pos !== false) {
         $message = substr($message, 0, $newline_pos);
     }
 
-    return $message;
+    echo sprintf("  c_%s [label=\"%s: %s\"]\n", $sha, substr($sha, 0, 7), $message);
+
+    if(!array_key_exists('parent', $kvlm)) {
+        // base case: initial commit
+        return;
+    }
+
+    $parents = $kvlm['parent'];
+
+    if(!is_array("parent")) {
+        $parents = [$parents];
+    }
+
+    foreach($parents as $parent) {
+        echo sprintf("  c_%s -> c_%s", $sha, $parent);
+        log_graphviz($repo, $parent, $seen);
+    }
 }
 
 function is_dir_empty($dir) {

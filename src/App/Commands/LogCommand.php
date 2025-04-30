@@ -25,11 +25,9 @@ class LogCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $commit = $input->getArgument("commit");
-        $output->writeln($commit);
-
         $repo = new GitRepository(".");
 
-        $poop = log_graphviz($repo, $commit, new \Ds\Set());
+        log_graphviz($repo, $commit, []);
 
         return Command::SUCCESS;
     }
