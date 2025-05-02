@@ -28,7 +28,8 @@ class LogCommand extends Command
         $commit = $input->getArgument("commit");
         $repo = new GitRepository(".");
 
-        log_graphviz($repo, object_find($repo, $commit, null), []);
+        $seen = [];
+        log_graphviz($repo, object_find($repo, $commit, null), $seen);
 
         return Command::SUCCESS;
     }
