@@ -369,7 +369,7 @@ function tree_parse(string $raw)
 function tree_leaf_sort_key(GitTreeLeaf $leaf)
 {
     $path = $leaf->getPath();
-    return str_starts_with($$leaf->getMode(), '10') ? $path : $path . "/";
+    return str_starts_with($leaf->getMode(), '10') ? $path : $path . "/";
 }
 
 function tree_serialize(GitTree $obj): string
