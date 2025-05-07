@@ -395,7 +395,7 @@ function ls_tree(GitRepository $repo, string $ref, bool $recursive=false, string
     $obj = object_read($repo, $sha);
 
     if(!$obj instanceof GitTree) {
-        throw new Exception(sprintf("object with ref %s is not a tree"));
+        throw new Exception(sprintf("object with ref %s is not a tree", $ref));
     }
 
     foreach($obj->getData() as $leaf) {
@@ -421,7 +421,7 @@ function ls_tree(GitRepository $repo, string $ref, bool $recursive=false, string
 
         $prefixed_path = rtrim($prefix, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $leaf->getPath();
         if (!($recursive && $type==='tree')) {
-            echo sprintf("%s %s %s\t%s", str_repeat('0', 6 - strlen($leaf->getMode())) . $leaf->getMode(), $type, $leaf->getSha(), $prefixed_path);
+            echo sprintf("%s %s %s\t%s\n", str_pad($leaf->getMode(), 6, '0', STR_PAD_LEFT), $type, $leaf->getSha(), $prefixed_path);
         } else {
             ls_tree($repo, $leaf->getSha(), $recursive, $prefixed_path);
         }
