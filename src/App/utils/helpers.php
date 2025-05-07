@@ -361,6 +361,7 @@ function tree_parse(string $raw)
     while($pos < $max) {
         $result = tree_parse_one($raw, $pos);
         $ret[] = $result['leaf'];
+        $pos = $result['start'];
     }
     return $ret;
 }
