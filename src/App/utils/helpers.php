@@ -8,6 +8,7 @@ use Console\App\Git\Object\GitCommit;
 use Console\App\Git\Object\GitObject;
 use Console\App\Git\Object\GitTag;
 use Console\App\Git\Object\GitTree;
+use Console\App\Git\Object\GitTreeLeaf;
 use Exception;
 
 file_put_contents('/tmp/helper_debug.log', "Helpers loaded\n", FILE_APPEND);
@@ -329,6 +330,39 @@ function log_graphviz(GitRepository $repo, string $sha, array &$seen)
         echo sprintf("  c_%s -> c_%s;\n", $sha, $parent);
         log_graphviz($repo, $parent, $seen);
     }
+}
+
+function tree_parse_one(string $raw, int $start = 0)
+{
+    $x = strpos($raw, ' ', $start);
+    $length = $x-$start;
+    assert($length === 5 || $length === 6, "Position of space has to be 5 or 6 characters after the start");
+
+    $mode = substr($raw, $start, $length);
+    if(strlen($mode) === 5) {
+        // Normalise to six bytes
+        $mode = "0" . $mode;
+    }
+
+    $y = strpos($raw, "\x00", $x);
+    $path = substr($raw, $x+1, $y-($x+1));
+
+    $raw_sha = substr($raw, $y+1, $y+20);
+    $sha = str_pad(bin2hex($raw_sha), 40, "0", STR_PAD_LEFT);
+    
+    return ["start" => $y+21, "leaf" => new GitTreeLeaf($mode, $path, $sha)];
+}
+
+function tree_parse(string $raw)
+{
+    $pos = 0;
+    $max = strlen($raw);
+    $ret = [];
+    while($pos < $max) {
+        $result = tree_parse_one($raw, $pos);
+        $ret[] = $result['leaf'];
+    }
+    return $ret;
 }
 
 function is_dir_empty($dir) {

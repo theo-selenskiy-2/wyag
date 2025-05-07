@@ -20,6 +20,8 @@ use function Console\App\utils\repo_create;
 use function Console\App\utils\repo_path;
 use function Console\App\utils\repo_file;
 use function Console\App\utils\object_write;
+use function Console\App\utils\tree_parse;
+use function Console\App\utils\tree_parse_one;
 
 class TestCommand extends Command
 {
@@ -48,11 +50,25 @@ class TestCommand extends Command
         return $sha;
     }
 
-
+    private function makeRow(string $mode, string $path, string $sha)
+    {
+        return $mode . ' ' . $path . "\x00" . hex2bin($sha);
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-         $path = $input->getArgument('path') ?? '.';
+        $entry = $this->makeRow('100644', 'README.md', '894a44cc066a027465cd26d634948d56d13af9af');
+        $output->writeln(sprintf("entry: %s", $entry));
+
+        $entry2 = $this->makeRow('100644', 'poop.md', '765a44cc066a027465cd26d634948d56d13af8bc');
+
+        $raw = $entry . $entry2;
+
+        $stuff = tree_parse($raw);
+
+        $output->writeln($stuff);
+
+        //$output->writeln(sprintf("mode: %s, path: %s, sha: %s,", $leaf->getMode(), $leaf->getPath(), $leaf->getSha()));
 
         return Command::SUCCESS;
     }
