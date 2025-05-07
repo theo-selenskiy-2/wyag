@@ -366,6 +366,25 @@ function tree_parse(string $raw)
     return $ret;
 }
 
+function tree_leaf_sort_key(GitTreeLeaf $leaf)
+{
+    $mode = $leaf->getMode();
+    return str_starts_with($mode, '10') ? $mode : $mode . "/";
+}
+
+function tree_serialize(GitTree $obj): string
+{
+    $serializedLeaves = array_map(function (GitTreeLeaf $leaf) {
+        return $leaf->getMode() . 
+        ' ' . 
+        $leaf->getPath() . 
+        "\x00" . 
+        intval($leaf->getSha(), 16) . 
+        hex2bin(str_pad($leaf->getSha(), 40, "0", STR_PAD_LEFT));
+    }, $obj->getData());
+    return array_reduce($serializedLeaves, fn ($carry, $item) => $carry . $item, '');
+}
+
 function is_dir_empty($dir) {
     if (!is_readable($dir)) return NULL; 
     return (count(scandir($dir)) == 2);
