@@ -147,9 +147,9 @@ function object_read(GitRepository $repo, string $sha): GitObject|null
         case "commit":
             $class = GitCommit::class;
             break;
-        // case "tree":
-        //     $class = GitTree::class;
-        //     break;
+        case "tree":
+            $class = GitTree::class;
+            break;
         // case "tag":
         //     $class = GitTag::class;
         //     break;
@@ -214,9 +214,9 @@ function object_hash(string $path, string $format, ?GitRepository $repo = null):
         case "commit":
             $class = GitCommit::class;
             break;
-        // case "tree":
-        //     $class = GitTree::class;
-        //     break;
+        case "tree":
+            $class = GitTree::class;
+            break;
         // case "tag":
         //     $class = GitTag::class;
         //     break;
@@ -387,6 +387,45 @@ function tree_serialize(GitTree $obj): string
         $serialized .= hex2bin(str_pad($leaf->getSha(), 40, "0", STR_PAD_LEFT));
     }
     return $serialized;
+}
+
+function ls_tree(GitRepository $repo, string $ref, bool $recursive=false, string $prefix="")
+{
+    $sha = object_find($repo, $ref, "tree");
+    $obj = object_read($repo, $sha);
+
+    if(!$obj instanceof GitTree) {
+        throw new Exception(sprintf("object with ref %s is not a tree"));
+    }
+
+    foreach($obj->getData() as $leaf) {
+        $mode = $leaf->getMode();
+        $type = substr($mode, 0, strlen($mode) === 5 ? 1 : 2);
+
+        switch ($type) {
+            case "04":
+                $type = 'tree';
+                break;
+            case "10":
+                $type = 'blob';
+                break;
+            case "12":
+                $type = 'blob';
+                break;
+            case "16":
+                $type = 'commit';
+                break;
+            default:
+                throw new Exception(sprintf("Unknown mode %s", $mode));
+        }
+
+        $prefixed_path = rtrim($prefix, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $leaf->getPath();
+        if (!($recursive && $type==='tree')) {
+            echo sprintf("%s %s %s\t%s", str_repeat('0', 6 - strlen($leaf->getMode())) . $leaf->getMode(), $type, $leaf->getSha(), $prefixed_path);
+        } else {
+            ls_tree($repo, $leaf->getSha(), $recursive, $prefixed_path);
+        }
+    }
 }
 
 function is_dir_empty($dir) {
