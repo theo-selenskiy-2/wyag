@@ -374,14 +374,19 @@ function tree_leaf_sort_key(GitTreeLeaf $leaf)
 
 function tree_serialize(GitTree $obj): string
 {
-    $serializedLeaves = array_map(function (GitTreeLeaf $leaf) {
-        return $leaf->getMode() . 
-        ' ' . 
-        tree_leaf_sort_key($leaf) . 
-        "\x00" . 
-        hex2bin(str_pad($leaf->getSha(), 40, "0", STR_PAD_LEFT));
-    }, $obj->getData());
-    return array_reduce($serializedLeaves, fn ($carry, $item) => $carry . $item, '');
+    $leaves = $obj->getData();
+
+    usort($leaves, function(GitTreeLeaf $a, GitTreeLeaf $b) {
+        return strcmp(tree_leaf_sort_key($a), tree_leaf_sort_key($b));
+    });
+
+    $serialized = "";
+    foreach($leaves as $leaf) {
+        $serialized .= $leaf->getMode();
+        $serialized .= $leaf->getPath() . "\x00";
+        $serialized .= hex2bin(str_pad($leaf->getSha(), 40, "0", STR_PAD_LEFT));
+    }
+    return $serialized;
 }
 
 function is_dir_empty($dir) {
