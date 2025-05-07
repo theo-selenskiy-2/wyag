@@ -377,9 +377,8 @@ function tree_serialize(GitTree $obj): string
     $serializedLeaves = array_map(function (GitTreeLeaf $leaf) {
         return $leaf->getMode() . 
         ' ' . 
-        $leaf->getPath() . 
+        tree_leaf_sort_key($leaf) . 
         "\x00" . 
-        intval($leaf->getSha(), 16) . 
         hex2bin(str_pad($leaf->getSha(), 40, "0", STR_PAD_LEFT));
     }, $obj->getData());
     return array_reduce($serializedLeaves, fn ($carry, $item) => $carry . $item, '');
