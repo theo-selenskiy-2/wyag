@@ -428,6 +428,22 @@ function ls_tree(GitRepository $repo, string $ref, bool $recursive=false, string
     }
 }
 
+function tree_checkout(GitRepository $repo, GitTree $tree, string $path)
+{
+    $leaves = $tree->getData();
+    foreach($leaves as $item) {
+        $obj = object_read($repo, $item->getSha());
+        $dest = realpath(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $item->getPath());
+
+        if($obj instanceof GitTree) {
+            mkdir($dest, 0777, true);
+            tree_checkout($repo, $obj, $dest);
+        } elseif($obj instanceof GitBlob) {
+            file_put_contents($dest, $obj->serialize());
+        }
+    }
+}
+
 function is_dir_empty($dir) {
     if (!is_readable($dir)) return NULL; 
     return (count(scandir($dir)) == 2);
