@@ -433,7 +433,7 @@ function tree_checkout(GitRepository $repo, GitTree $tree, string $path)
     $leaves = $tree->getData();
     foreach($leaves as $item) {
         $obj = object_read($repo, $item->getSha());
-        $dest = realpath(rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $item->getPath());
+        $dest = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $item->getPath();
 
         if($obj instanceof GitTree) {
             mkdir($dest, 0777, true);

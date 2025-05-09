@@ -14,6 +14,7 @@ use function Console\App\utils\is_dir_empty;
 use function Console\App\utils\log_graphviz;
 use function Console\App\utils\object_find;
 use function Console\App\utils\object_read;
+use function Console\App\utils\tree_checkout;
 
 use Exception;
 
@@ -56,8 +57,7 @@ class CheckoutCommand extends Command
             mkdir($path, 0777, true);
         }
         
-
-
+        tree_checkout($repo, $obj, $path);
         return Command::SUCCESS;
     }
 }
